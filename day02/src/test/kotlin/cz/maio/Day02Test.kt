@@ -5,23 +5,32 @@ import org.junit.jupiter.api.Test
 
 class Day02Test {
     enum class RoundResult {
-        Won,
-        Draw,
-        Lost;
+        Won, Draw, Lost;
 
-        fun score(): Int {
-            return when (this) {
-                Won -> 6
-                Draw -> 3
-                Lost -> 0
+        fun score() = when (this) {
+            Won -> 6
+            Draw -> 3
+            Lost -> 0
+        }
+
+        fun invert() = when (this) {
+            Won -> Lost
+            Draw -> Draw
+            Lost -> Won
+        }
+
+        companion object {
+            fun of(s: String) = when (s) {
+                "X" -> Lost
+                "Y" -> Draw
+                "Z" -> Won
+                else -> error("Unknown: $s")
             }
         }
     }
 
     enum class Choice {
-        Rock,
-        Paper,
-        Scissors;
+        Rock, Paper, Scissors;
 
         fun score(): Int = when (this) {
             Rock -> 1
@@ -29,26 +38,28 @@ class Day02Test {
             Scissors -> 3
         }
 
-        fun compare(other: Choice): RoundResult {
-            return when (this) {
-                Rock -> when (other) {
-                    Rock -> RoundResult.Draw
-                    Paper -> RoundResult.Lost
-                    Scissors -> RoundResult.Won
-                }
-
-                Paper -> when (other) {
-                    Rock -> RoundResult.Won
-                    Paper -> RoundResult.Draw
-                    Scissors -> RoundResult.Lost
-                }
-
-                Scissors -> when (other) {
-                    Rock -> RoundResult.Lost
-                    Paper -> RoundResult.Won
-                    Scissors -> RoundResult.Draw
-                }
+        fun compare(other: Choice) = when (this) {
+            Rock -> when (other) {
+                Rock -> RoundResult.Draw
+                Paper -> RoundResult.Lost
+                Scissors -> RoundResult.Won
             }
+
+            Paper -> when (other) {
+                Rock -> RoundResult.Won
+                Paper -> RoundResult.Draw
+                Scissors -> RoundResult.Lost
+            }
+
+            Scissors -> when (other) {
+                Rock -> RoundResult.Lost
+                Paper -> RoundResult.Won
+                Scissors -> RoundResult.Draw
+            }
+        }
+
+        fun findMyChoiceForResult(result: RoundResult): Choice {
+            return listOf(Rock, Paper, Scissors).first { this.compare(it) == result }
         }
 
         companion object {
@@ -93,23 +104,34 @@ class Day02Test {
         return my.compare(theirs).score() + my.score()
     }
 
+    private fun computePart2(input: String) = input.lines().sumOf {
+        computePart2Single(it)
+    }
+
+    private fun computePart2Single(line: String): Int {
+        val (a, b) = line.split(" ")
+        val theirs = Choice.of(a)
+        val result = RoundResult.of(b)
+        val my = theirs.findMyChoiceForResult(result.invert())
+
+        return my.compare(theirs).score() + my.score()
+    }
+
     @Test
     fun `sample input`() {
-        val result = computePart1(
-            """
+        val input = """
             A Y
             B X
             C Z
         """.trimIndent()
-        )
 
-        assertThat(result).isEqualTo(8 + 1 + 6)
+        assertThat(computePart1(input)).isEqualTo(8 + 1 + 6)
+        assertThat(computePart2(input)).isEqualTo(4 + 1 + 7)
     }
 
     @Test
     fun `part 1 & 2`() {
-        val result = computePart1(
-            """
+        val input = """
             B Z
             A X
             C X
@@ -2611,8 +2633,8 @@ class Day02Test {
             C X
             C X
         """.trimIndent()
-        )
 
-        assertThat(result).isEqualTo(14297)
+        assertThat(computePart1(input)).isEqualTo(14297)
+        assertThat(computePart2(input)).isEqualTo(10498)
     }
 }
