@@ -24,6 +24,6 @@ class Day06Test {
     private fun compute1(input: String) = input.findPacket(4)
     private fun compute2(input: String) = input.findPacket(14)
 
-    private fun String.findPacket(length: Int) = windowedSequence(size = length, step = 1)
+    private fun String.findPacket(length: Int) = windowedSequence(length)
         .indexOfFirst { it.toSet().size == length } + length
 }
