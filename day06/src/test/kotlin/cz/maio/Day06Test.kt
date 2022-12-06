@@ -21,10 +21,9 @@ class Day06Test {
         assertThat(compute2(input)).isEqualTo(3217)
     }
 
-    private fun compute1(input: String) = findPacket(input, 4)
-    private fun compute2(input: String) = findPacket(input, 14)
+    private fun compute1(input: String) = input.findPacket(4)
+    private fun compute2(input: String) = input.findPacket(14)
 
-    private fun findPacket(input: String, length: Int) = input
-        .windowedSequence(size = length, step = 1)
+    private fun String.findPacket(length: Int) = windowedSequence(size = length, step = 1)
         .indexOfFirst { it.toSet().size == length } + length
 }
