@@ -24,10 +24,7 @@ class Day06Test {
     private fun compute1(input: String) = findPacket(input, 4)
     private fun compute2(input: String) = findPacket(input, 14)
 
-    private fun findPacket(input: String, length: Int): Int {
-        input.windowedSequence(size = length, step = 1).forEachIndexed { index, s ->
-            if (s.toSet().size == length) return length + index
-        }
-        error("invalid input?")
-    }
+    private fun findPacket(input: String, length: Int) = input
+        .windowedSequence(size = length, step = 1)
+        .indexOfFirst { it.toSet().size == length } + length
 }
